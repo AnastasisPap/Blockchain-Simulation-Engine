@@ -2,9 +2,9 @@
 
 ### Bin Cover
 Since opening a new pool isn't currently a possible strategy, it's important for the initial assignment to have as many pools as possible (that are above the threshold). This problem is called ["Bin Cover"](https://en.wikipedia.org/wiki/Bin_covering_problem), and has an easy O(nlogn) 2/3-approximation. The algorithm that follows is from Csirik, Frenk, Lebbe, and Zhang[^1]:
-> Order by decreasing order
-> Fill a bin with the largest m items, such that the total stake is less than the threshold and adding the (m+1)-st largest item will result to a total stake >= threshold
-> Fill the bin with the smallest items until the total stake >= threshold
+> Order by decreasing order<br/>
+> Fill a bin with the largest m items, such that the total stake is less than the threshold and adding the (m+1)-st largest item will result to a total stake >= threshold<br/>
+> Fill the bin with the smallest items until the total stake >= threshold<br/>
 > Repeat
 
 ### Reward Functions
