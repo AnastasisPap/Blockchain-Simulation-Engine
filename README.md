@@ -60,9 +60,10 @@ python -m unittest
 ### Task list (by priority)
 - [ ] Implement the Weighted Voting Game Shapley approximation
 - [ ] Handle hanging agents (happens when a pool owner changes strategy)
-- [ ] Use multiple threads
 - [ ] Handle simulation end (show graphs, store results, etc.)
 - [ ] Create "whale" distribution
+- [ ] Code cleanup
+- [ ] Use multiple threads
 
 ### Sources
 [^1]: Csirik, Frenk, Lebbe, Zhang (1999). ["Two simple algorithms for bin covering"](https://cyber.bibl.u-szeged.hu/index.php/actcybern/article/view/3507)
