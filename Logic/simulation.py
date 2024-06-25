@@ -52,7 +52,7 @@ class Simulation:
             return
     
     def finish_simulation(self, iter, converged=False):
-        opt_ub = int(np.ceil(sum([agent.stake for agent in self.agents])/self.n))
+        opt_ub = int(np.ceil(sum([agent.stake for agent in self.agents])/self.h0))
         final_agent_actions = np.array([agent.pool for agent in self.agents])
         total_pools = len(np.where(final_agent_actions == np.arange(self.n))[0])
 
