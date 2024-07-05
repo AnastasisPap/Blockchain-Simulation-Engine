@@ -1,5 +1,4 @@
-from tqdm.notebook import tqdm
-import time
+from tqdm import tqdm
 import numpy as np
 from Logic.agent import Agent
 from Logic.bin_cover import bin_cover_approx
@@ -15,7 +14,10 @@ class Simulation:
         self.h0 = args.h0
         self.a0 = args.a0
         self.stake_distr = args.stake_distr.lower()
-        extra_args = [args.m] if args.m else []
+        if args.func == 1:
+            extra_args = [args.m]
+        elif args.func == 2:
+            extra_args = [args.h0]
         self.reward_function = RewardFunctions(args.func, extra_args)
         self.max_stake_prop = args.max_stake_prop
         self.agents = []
@@ -31,8 +33,8 @@ class Simulation:
         self.agents, self.initial_num_of_pools = bin_cover_approx(self.agents)
         self.agent_actions = np.array([agent.pool for agent in self.agents])
 
-        sim_timer_start = time.perf_counter()
-        for iter in tqdm(range(self.max_epochs + 1)):
+        self.progress_bar = tqdm(range(self.max_epochs + 1))
+        for iter in self.progress_bar:
             converged = self.step()
 
             if converged:
@@ -46,12 +48,12 @@ class Simulation:
             else: self.previous_states.add(curr_state)
 
         if iter == self.max_epochs:
-            sim_timer_end = time.perf_counter()
-            print(f'Simulation finished after {sim_timer_end - sim_timer_start:0.2f} seconds.')
+            print(f'Simulation reached max epochs.')
             self.finish_simulation(iter)
             return
     
     def finish_simulation(self, iter, converged=False):
+        self.progress_bar.close()
         opt_ub = int(np.ceil(sum([agent.stake for agent in self.agents])/self.h0))
         final_agent_actions = np.array([agent.pool for agent in self.agents])
         total_pools = len(np.where(final_agent_actions == np.arange(self.n))[0])

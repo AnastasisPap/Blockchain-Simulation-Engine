@@ -7,7 +7,7 @@ def get_args():
     parser.add_argument('--stake_distr', nargs='?', type=str, default='uniform',
                         help= 'The distribution that will be used to generate the stake for each agent.'
                         'The available distributions is the Uniform distribution.')
-    parser.add_argument('--func', nargs='?', type=int, choices=range(2), default=1,
+    parser.add_argument('--func', nargs='?', type=int, choices=range(3), default=1,
                         help='The method that will be used to calculate the agent value. 0: Shapley value - exact calculation, 1: Monte Carlo Shapley value, 2: Weighted Voting Game Shapley Value')
     parser.add_argument('--max_stake_prop', nargs='?', type=float, default=0.75, help='The proportion of the threshold that will be the maximum stake. For example if it\'s 0.75, then 0.75*threshold will be the maximum possible stake.')
     parser.add_argument('--epochs', nargs='?', type=int, default=100000, help='The maximum number of epochs for the simulation to run, if no convergence has happened.')

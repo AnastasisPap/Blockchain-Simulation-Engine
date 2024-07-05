@@ -1,4 +1,6 @@
 import numpy as np
+import warnings
+import scipy.stats as st
 from more_itertools import powerset
 
 class RewardFunctions:
@@ -12,8 +14,10 @@ class RewardFunctions:
             return self.exact_shap(*args)
         elif self.selection == 1:
             return self.mc_shap(*args, *self.extra_args)
+        elif self.selection == 2:
+            return self.wvg_shap(*args, *self.extra_args)
         else:
-            return self.wvg_shap(*args)
+            raise Exception("Incorrect option for Reward Function.")
 
     def exact_shap(self, game, agent_idx):
         """Compute the exact Shapley value
@@ -44,5 +48,20 @@ class RewardFunctions:
 
     # Taken from: "A linear approximation method for the Shapley value"
     #     by Fatima, Wooldridge, Jennings. Used for Weighted Voting Games.
-    def wvg_shap(self, game, agent_idx):
-        return
+    def wvg_shap(self, game, agent_idx, q):
+        warnings.filterwarnings('ignore')
+        epsilon = np.exp(-15)
+        mean = np.mean(game.stake_distribution)
+        std = np.std(game.stake_distribution)
+
+        T = 0
+        n = game.n
+
+        for X in range(n):
+            if X == 0: X = np.exp(-10)
+            a = (q - game.get_agent_stake(agent_idx)) / X
+            b = (q - epsilon) / X
+
+            T += st.norm.cdf((b - mean)/std) - st.norm.cdf((a - mean)/std)
+        
+        return T / n

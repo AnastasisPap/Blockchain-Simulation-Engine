@@ -17,3 +17,8 @@ class Game:
     
     def get_agent_ids(self):
         return set([agent.id for agent in self.agents])
+    
+    def get_agent_stake(self, agent_id):
+        if agent_id not in self.agent_ids: raise Exception("Can't find such agent id")
+        idx = np.where(self.agent_ids == agent_id)[0][0]
+        return self.stake_distribution[idx]
