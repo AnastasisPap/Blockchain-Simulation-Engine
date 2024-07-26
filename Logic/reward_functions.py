@@ -50,15 +50,14 @@ class RewardFunctions:
     #     by Fatima, Wooldridge, Jennings. Used for Weighted Voting Games.
     def wvg_shap(self, game, agent_idx, q):
         warnings.filterwarnings('ignore')
-        epsilon = np.exp(-15)
+        epsilon = np.exp(-10)
         mean = np.mean(game.stake_distribution)
         std = np.std(game.stake_distribution)
 
         T = 0
         n = game.n
 
-        for X in range(n):
-            if X == 0: X = np.exp(-10)
+        for X in range(1, n):
             a = (q - game.get_agent_stake(agent_idx)) / X
             b = (q - epsilon) / X
 
