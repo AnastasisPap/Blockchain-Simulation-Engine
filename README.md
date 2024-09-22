@@ -8,8 +8,8 @@ Since opening a new pool isn't currently a possible strategy, it's important for
 > Repeat
 
 ### Reward Functions
-To find the next best response of an agent we use a reward function, the main one is the Shapley Value. For each coalition that forms a pool, use the Shapley value to calculate the value of the agent by moving to that pool and choose the one which results to the highest value. Since it takes exponentially long to calculate the Shapley value, we use approximations. Two approximations are used:
-- **Monte Carlo approximation**: sample permuations.
+To find the next best response of an agent we use a reward function, the main one is the Shapley Value. For each coalition that forms a pool, use the Shapley value to calculate the value of the agent by moving to that pool and choose the one which results to the highest value. We calculate the Shapley value using two functions:
+- **Exact algorithm**: finds the Shapley value exactly. Takes **exponential** time!
 - **Weighted Voting Game approximation**: approximation created for weighted voting games (linear time without sampling) gotten from [^2].
 
 ### Simulation
@@ -58,7 +58,6 @@ python -m unittest
 ```
 
 ### Task list (by priority)
-- [ ] Implement the Weighted Voting Game Shapley approximation
 - [ ] Handle hanging agents (happens when a pool owner changes strategy)
 - [ ] Handle simulation end (show graphs, store results, etc.)
 - [ ] Create "whale" distribution

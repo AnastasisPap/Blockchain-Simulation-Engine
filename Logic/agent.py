@@ -1,6 +1,6 @@
 import numpy as np
+from scipy.stats import norm
 from Logic.game import Game
-from Logic.reward_functions import *
 
 class Agent:
     def __init__(self, id, stake, threshold_value, reward_function):
@@ -17,26 +17,27 @@ class Agent:
     
     def choose_action(self, agents):
         # The agent needs to select one of the m pools to put their stake to.
-        # We calculate the Shapley Value for each pool and the next action will
-        #  be the one that has the highest Shapley value.
-        agents_action = np.array([agent.pool for agent in agents])
-        pools = np.where(agents_action == np.arange(len(agents_action)))[0]
+        # We calculate the reward for each pool and the next action will
+        #  be the one that has the highest value.
+        agent_actions = np.array([agent.pool for agent in agents])
+        pools = np.where(agent_actions == np.arange(len(agent_actions)))[0]
 
-        best_val = float('-inf')
-        best_response = 0
-        for pool in pools:
-            curr_agents = agents[np.where(agents_action == pool)[0]]
-            if self.pool != pool: curr_agents = np.append(curr_agents, self)
+        # W stores the weights of the agents for each pool created and also
+        # includes the current agent's stake for each pool, if not already.
+        W = np.zeros((len(pools), len(agents)))
+        for i, pool in enumerate(pools):
+            idxes = np.where(agent_actions == pool)[0]
+            if self.pool != pool: idxes = np.append(idxes, self.id)
 
-            game = Game(curr_agents)
-            curr_val = self.reward_function.get_value(game, self.id)
+            W[i, idxes] = np.array([agent.stake for agent in agents[idxes]])
+        
+        # Calculate the Shapley Value for each agent for all the pools
+        sols = self.reward_function.get_value(self, W)
 
-            if curr_val > best_val:
-                best_val = curr_val
-                best_response = pool
-
+        best_response = pools[np.argmax(sols)]
         self.take_action(best_response)
+
         return best_response
-    
+
     def __str__(self):
         return f'ID: {self.id} with total stake {self.stake}'

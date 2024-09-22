@@ -3,6 +3,7 @@ import numpy as np
 from Logic.agent import Agent
 from Logic.bin_cover import bin_cover_approx
 from Logic.reward_functions import RewardFunctions
+import shapley
 
 # TODO(anastasis): use multiple threads
 class Simulation:
@@ -14,10 +15,12 @@ class Simulation:
         self.h0 = args.h0
         self.a0 = args.a0
         self.stake_distr = args.stake_distr.lower()
+        extra_args = []
         if args.func == 1:
             extra_args = [args.m]
         elif args.func == 2:
             extra_args = [args.h0]
+        #self.solver = shapley.ExpectedMarginalContributions()
         self.reward_function = RewardFunctions(args.func, extra_args)
         self.max_stake_prop = args.max_stake_prop
         self.agents = []
@@ -83,10 +86,10 @@ class Simulation:
             np.random.seed(self.seed)
 
         if self.stake_distr == 'uniform':
-            stakes = np.random.randint(1, self.h0 * self.max_stake_prop, self.n)
+            stakes = np.random.uniform(1, self.h0 * self.max_stake_prop, self.n)
         elif self.stake_distr == 'pareto':
-            max_stake = int(self.h0 * self.max_stake_prop)
-            stakes = np.ceil(np.random.pareto(np.random.pareto(self.a0, self.n))).astype(int)
+            max_stake = self.h0 * self.max_stake_prop
+            stakes = np.random.pareto(np.random.pareto(self.a0, self.n))
             stakes[np.where(stakes > max_stake)[0]] = max_stake
 
         for i in range(self.n):
