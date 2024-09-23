@@ -58,9 +58,8 @@ python -m unittest
 ```
 
 ### Task list (by priority)
-- [ ] Create batch execution for multiple parameter values
-- [ ] Use multiple threads
 - [ ] Handle simulation end (show graphs, store results, etc.)
+- [ ] Use equation to find the threshold value using max_stake as parameter
 - [ ] Create "whale" distribution
 - [ ] Code cleanup
 

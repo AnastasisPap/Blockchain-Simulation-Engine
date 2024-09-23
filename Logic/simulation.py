@@ -1,69 +1,79 @@
-from tqdm import tqdm
 import numpy as np
+import time
 from Logic.agent import Agent
 from Logic.bin_cover import bin_cover_approx
 from Logic.reward_functions import RewardFunctions
-import shapley
 
-# TODO(anastasis): use multiple threads
 class Simulation:
     # Agent action at index i:
     #   i -> the player with ID=i owns the pool
     #   j -> the player with ID=i is has a stake in the pool of agent with ID=j
     def __init__(self, args):
-        self.n = args.n
-        self.h0 = args.h0
-        self.a0 = args.a0
-        self.stake_distr = args.stake_distr.lower()
+        self.n = args.get('n')
+        self.h0 = args.get('h0')
+        self.a0 = args.get('a0', None)
+        self.stake_distr = args.get('stake_distr').lower()
+        self.config_id = args.get('config_id')
+
         extra_args = []
-        if args.func == 1:
-            extra_args = [args.m]
-        elif args.func == 2:
+        func = args.get('func')
+
+        """
+        In case you want to pass extra arguments to the RewardFunctions class
+         replace X with the appropriate selection number and the extra arguments
+        if func == X:
             extra_args = [args.h0]
-        #self.solver = shapley.ExpectedMarginalContributions()
-        self.reward_function = RewardFunctions(args.func, extra_args)
-        self.max_stake_prop = args.max_stake_prop
+        """
+
+        self.reward_function = RewardFunctions(func, extra_args)
+        self.max_stake_prop = args.get('max_stake_prop')
         self.agents = []
         self.agent_actions = np.zeros(self.n)
-        self.seed = args.seed if args.seed else None
-        self.max_epochs = args.epochs
+        self.seed = args.get('seed', None)
+        self.max_epochs = args.get('epochs')
         self.agent_stakes = []
         self.previous_states = set([]) # used to check if there are cycles of states (which will eventually reach max epochs)
         self.initial_num_of_pools = 0
 
     def start(self):
+        print(f'Starting configuration with id: {self.config_id}...')
+        self.start_time = time.time()
         self.initialize_agents()
         self.agents, self.initial_num_of_pools = bin_cover_approx(self.agents)
         self.agent_actions = np.array([agent.pool for agent in self.agents])
 
-        self.progress_bar = tqdm(range(self.max_epochs + 1))
-        for iter in self.progress_bar:
+        for iter in range(self.max_epochs+1):
             converged = self.step()
 
             if converged:
-                self.finish_simulation(iter, True)
-                return
+                return self.finish_simulation(iter, True)
 
             curr_state = str([agent.pool for agent in self.agents])
             if curr_state in self.previous_states:
-                self.finish_simulation(iter)
-                return
+                return self.finish_simulation(iter)
             else: self.previous_states.add(curr_state)
 
         if iter == self.max_epochs:
             print(f'Simulation reached max epochs.')
-            self.finish_simulation(iter)
-            return
+            return self.finish_simulation(iter)
     
     def finish_simulation(self, iter, converged=False):
-        self.progress_bar.close()
+        end_time = time.time()
+        print(f'Finished configuration {self.config_id} after {int(end_time - self.start_time)} seconds.')
+
         opt_ub = int(np.ceil(sum([agent.stake for agent in self.agents])/self.h0))
         final_agent_actions = np.array([agent.pool for agent in self.agents])
         total_pools = len(np.where(final_agent_actions == np.arange(self.n))[0])
 
-        if converged: print(f'Simulation converged after {iter + 1} iterations. Initially there were {self.initial_num_of_pools} pools and converged to {total_pools} pools. The upper bound for the optimal number of pools is {opt_ub}.')
-        elif iter < self.max_epochs: print(f'Cycle detected without reaching equilibrium.')
-        else: print(f'Simulation did not converge to an equilibrium (max epochs reached).')
+        res = {
+            'iter': iter,
+            'converged': converged,
+            'initial_num_of_pools': self.initial_num_of_pools,
+            'total_pools': total_pools,
+            'opt_ub': opt_ub,
+            'config_id': self.config_id,
+        }
+        return res
         # TODO(anastasis): show graphs
 
     def step(self):
