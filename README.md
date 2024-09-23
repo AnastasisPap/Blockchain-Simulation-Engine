@@ -18,32 +18,26 @@ To find the next best response of an agent we use a reward function, the main on
 3. If for all agents their actions didn't change, we have reached an equilibrium.
 4. If no equilibrium is reached the simulation ends in two ways: (1) max epochs are reached, (2) state cycle is detected in which the current state (the actions of each agent) has been seen before. This would eventually reach max epochs.
 
-### Argument list
-- **n**: the number of agents (default=1000).
-- **h0**: the threshold value for the weighted voting game (default=32).
-- **stake_distr**: the distribution from which agent stakes will be sampled from. Current options are the uniform and pareto distributions (default=uniform).
-- **func**: the reward function that will be used. Current options include the exact Shapley (0) and Monte Carlo shapley approximation (1).
-- **max_stake_prop**: a number in (0, 1) which indicates what percentage of the threshold value will be the maximum possible stake value (default=0.75).
-- **epochs**: max number of iterations (default=100000).
-- **seed**: the random seed for numpy.
-- **m**: the total number of samples to be taken when using the Monte Carlo approximation (default=100).
-- **a0**: the shape of the pareto distribution (default=1.2).
+### Create the config file
+Each configuration file **must** include all of the following. If an argument can take multiple values, it **must always** be used as a list.
+To avoid possible errors, you can use the config.json file from this repo and change/add values.
+
+- **n (list[int])**: the number of agents.
+- **h0 (list[int])**: the threshold value for the weighted voting game.
+- **stake_distr ("uniform" | "pareto")**: the distribution from which agent stakes will be sampled from. Current options are the uniform and pareto distributions.
+- **func (0 | 1)**: the reward function that will be used. Current options include the exact Shapley (0) and from [^2] the Weighted Voting Game Approximation (1).
+- **max_stake_prop (list[float])**: a number in (0, 1) which indicates what percentage of the threshold value will be the maximum possible stake value.
+- **epochs (int)**: max number of iterations.
+- **seed (int)**: the random seed for numpy.
+- **a0 (list[float])**: the shape of the pareto distribution.
+- **max_workers (int)**: the number of workers to be used/number of parallel pools to be created.
+- **execution_id (str)**: the name for this execution. This will be used as the file name for the output.
+- **iterations (int)**: number of iterations to perform for each configuration. The average of all iterations is taken.
 
 ### Running the simulation
 1. From the CLI, set the arguments and run main.py, for example:
 ```
-python main.py --n 100 --h0 50 --func 0
-```
-2. For VSCode, use `launch.json` and debug. For more details use the [VSCode docs](https://code.visualstudio.com/docs/python/debugging#_initialize-configurations). Example configuration for `launch.json`:
-```json
-{
-    "name": "Debug Config={n:15, h0:15, Uniform, Exact Shapley}",
-    "type": "debugpy",
-    "request": "launch",
-    "program": "${file}",
-    "console": "integratedTerminal",
-    "args": ["--n", "15", "--h0", "15", "--stake_distr", "uniform", "--func", "0"]
-}
+python main.py ./path/to/config.json
 ```
 
 ### Running tests
@@ -63,6 +57,5 @@ python -m unittest
 - [ ] Create "whale" distribution
 - [ ] Code cleanup
 
-### Sources
 [^1]: Csirik, Frenk, Lebbe, Zhang (1999). ["Two simple algorithms for bin covering"](https://cyber.bibl.u-szeged.hu/index.php/actcybern/article/view/3507)
 [^2]: Fatima, Wooldridge, Jennings (2008). ["A linear approximation method for the Shapley Value"](https://doi.org/10.1016/j.artint.2008.05.003)
