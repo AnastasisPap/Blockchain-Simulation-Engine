@@ -9,6 +9,7 @@ class Simulation:
     #   i -> the player with ID=i owns the pool
     #   j -> the player with ID=i is has a stake in the pool of agent with ID=j
     def __init__(self, args):
+        self.data = args
         self.n = args.get('n')
         self.h0 = args.get('h0')
         self.a0 = args.get('a0', None)
@@ -34,6 +35,8 @@ class Simulation:
         self.agent_stakes = []
         self.previous_states = set([]) # used to check if there are cycles of states (which will eventually reach max epochs)
         self.initial_num_of_pools = 0
+
+        self.whale_prob = args.get('whale_prob', 0.05) # Used for whale distribution
 
     def start(self):
         print(f'Starting configuration with id: {self.config_id}...')
@@ -73,7 +76,10 @@ class Simulation:
             'opt_ub': opt_ub,
             'config_id': self.config_id,
         }
-        return res
+
+        self.data['results'] = res
+
+        return self.data
         # TODO(anastasis): show graphs
 
     def step(self):
@@ -101,6 +107,12 @@ class Simulation:
             max_stake = self.h0 * self.max_stake_prop
             stakes = np.random.pareto(np.random.pareto(self.a0, self.n))
             stakes[np.where(stakes > max_stake)[0]] = max_stake
+        elif self.stake_distr == 'whale':
+            whale_stake = self.h0 * self.max_stake_prop
+            stakes = np.random.choice(
+                [1, whale_stake],
+                p=[1-self.whale_prob, self.whale_prob],
+                size=self.n)
 
         for i in range(self.n):
             self.agents.append(Agent(i, stakes[i], self.h0, self.reward_function))

@@ -40,19 +40,20 @@ def handle_outputs(outputs):
     processed_out = {}
 
     for config_id, data in outputs.items():
+        processed_out[config_id] = data[0].copy()
         total_pools = 0
         init_pools = 0
         opt_ub = 0
 
         for item in data:
-            total_pools += item['total_pools']
-            init_pools += item['initial_num_of_pools']
-            opt_ub += item['opt_ub']
+            total_pools += item['results']['total_pools']
+            init_pools += item['results']['initial_num_of_pools']
+            opt_ub += item['results']['opt_ub']
     
         total_pools /= len(data)
         init_pools /= len(data)
         opt_ub /= len(data)
-        processed_out[config_id] = {
+        processed_out[config_id]['results'] = {
             'avg_total_pools': total_pools,
             'avg_init_pools': init_pools,
             'avg_opt_ub': opt_ub

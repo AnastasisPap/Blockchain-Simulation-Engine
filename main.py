@@ -2,6 +2,7 @@ import sys
 import json
 from Logic.experiment import Experiment
 from helper import generate_configs, handle_outputs
+from graphing import Graphing
 
 def main():
     config_file_path = sys.argv[1]
@@ -12,15 +13,18 @@ def main():
     # Run experiment. The difference between an experiment and a simulation
     # is that the experiment runs multiple simulations with different configurations
     experiment = Experiment(args, configs)
-    outputs = experiment.run()
+    data = experiment.run()
 
-    full_results = {'args': args, 'results': outputs}
-    results_file = f'./results/{args.get("execution_id")}.json'
+    processed_data = handle_outputs(data)
+
+    graph = Graphing(processed_data)
+    graph.store_heatmaps(f'./results/{args.get("execution_id")}/graphs')
+
+    results_file = f'./results/{args.get("execution_id")}/results.json'
     with open(results_file, 'w') as f:
-        json.dump(full_results, f)
-
-    processed_data = handle_outputs(outputs)
-    print(processed_data)
+        json.dump(processed_data, f)
+    
+    
 
 if __name__ == '__main__':
     main()

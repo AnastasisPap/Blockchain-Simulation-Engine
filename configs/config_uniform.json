@@ -1,0 +1,13 @@
+{
+    "n": [100,200,300],
+    "h0": [10,20,30,40],
+    "stake_distr": "uniform",
+    "func": 1,
+    "max_stake_prop": [0.5,0.75],
+    "epochs": 1000,
+    "seed": 0,
+    "a0": [1.2],
+    "max_workers": 6,
+    "execution_id": "ExecutionId{n:[100,200,300],h0:[10,20,30,40],uniform}",
+    "iterations": 5
+}
