@@ -11,10 +11,11 @@ class Simulation:
     def __init__(self, args):
         self.data = args
         self.n = args.get('n')
-        self.h0 = args.get('h0')
+        self.max_stake = args.get('max_stake')
         self.a0 = args.get('a0', None)
         self.stake_distr = args.get('stake_distr').lower()
         self.config_id = args.get('config_id')
+        self.exp_pools = 5 if self.n < 100 else (7.5 if self.n < 250 else 10)
 
         extra_args = []
         func = args.get('func')
@@ -27,7 +28,6 @@ class Simulation:
         """
 
         self.reward_function = RewardFunctions(func, extra_args)
-        self.max_stake_prop = args.get('max_stake_prop')
         self.agents = []
         self.agent_actions = np.zeros(self.n)
         self.seed = args.get('seed', None)
@@ -80,7 +80,6 @@ class Simulation:
         self.data['results'] = res
 
         return self.data
-        # TODO(anastasis): show graphs
 
     def step(self):
         converged = True
@@ -95,25 +94,26 @@ class Simulation:
         
         return converged
 
-    # TODO(anastasis): Create the "whale" stake distribution
     def initialize_agents(self):
         stakes = np.array([])
         if self.seed:
             np.random.seed(self.seed)
 
         if self.stake_distr == 'uniform':
-            stakes = np.random.uniform(1, self.h0 * self.max_stake_prop, self.n)
+            h0 = (1+self.max_stake) * self.exp_pools / 2
+            stakes = np.random.uniform(1, self.max_stake, self.n)
         elif self.stake_distr == 'pareto':
-            max_stake = self.h0 * self.max_stake_prop
+            h0 = self.a0 / (self.a0 - 1) * self.exp_pools
             stakes = np.random.pareto(np.random.pareto(self.a0, self.n))
-            stakes[np.where(stakes > max_stake)[0]] = max_stake
+            stakes[np.where(stakes > self.max_stake)[0]] = self.max_stake
         elif self.stake_distr == 'whale':
-            whale_stake = self.h0 * self.max_stake_prop
+            h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.exp_pools
             stakes = np.random.choice(
-                [1, whale_stake],
+                [1, self.max_stake],
                 p=[1-self.whale_prob, self.whale_prob],
                 size=self.n)
-
+            
+        self.h0 = h0
         for i in range(self.n):
             self.agents.append(Agent(i, stakes[i], self.h0, self.reward_function))
         

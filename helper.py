@@ -9,19 +9,17 @@ def generate_configs(args):
      - args_list(list): list of dictionaries with the configurations to run the experiment.
     """
     list_n = args.get('n')
-    list_h0 = args.get('h0')
-    list_max_stake = args.get('max_stake_prop')
+    list_max_stake = args.get('max_stake')
     list_a0 = args.get('a0')
 
     # Generate all possible combinations of the arguments
-    configurations = itertools.product(list_n, list_h0, list_max_stake, list_a0)
+    configurations = itertools.product(list_n, list_max_stake, list_a0)
 
     args_list = []
     for i, config in enumerate(configurations):
-        n, h0, max_stake, a0 = config
+        n, max_stake, a0 = config
         args['n'] = n
-        args['h0'] = h0
-        args['max_stake_prop'] = max_stake
+        args['max_stake'] = max_stake
         args['a0'] = a0
         args['config_id'] = f'config_{i+1}'
         args_list.append(args.copy())

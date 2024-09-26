@@ -1,13 +1,12 @@
 {
-    "n": [500],
-    "h0": [15, 20],
+    "n": [50,100,150,200,250,300,500],
+    "max_stake": [10,20,30,40,50,100,200],
     "stake_distr": "whale",
     "func": 1,
-    "max_stake_prop": [0.5],
     "epochs": 1000,
     "seed": 0,
     "a0": [1.2],
     "max_workers": 6,
-    "execution_id": "ExecutionId{n:[500],h0:[15,20],p:0.5,whale}",
+    "execution_id": "ExecutionId{n:[50,100,150,200,250,300,500],max_stake:[10,20,30,40,50,100,200],p:0.05,whale}",
     "iterations": 5
 }

@@ -24,7 +24,6 @@ def main():
     with open(results_file, 'w') as f:
         json.dump(processed_data, f)
     
-    
 
 if __name__ == '__main__':
     main()
