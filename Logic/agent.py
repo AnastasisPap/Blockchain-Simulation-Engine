@@ -41,3 +41,10 @@ class Agent:
 
     def __str__(self):
         return f'ID: {self.id} with total stake {self.stake}'
+    
+    def to_dict(self):
+        return {
+            'id': int(self.id),
+            'stake': float(self.stake),
+            'pool': int(self.pool)
+        }

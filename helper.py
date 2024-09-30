@@ -10,17 +10,17 @@ def generate_configs(args):
     """
     list_n = args.get('n')
     list_max_stake = args.get('max_stake')
-    list_a0 = args.get('a0')
+    list_exp_pools = args.get('exp_pools')
 
     # Generate all possible combinations of the arguments
-    configurations = itertools.product(list_n, list_max_stake, list_a0)
+    configurations = itertools.product(list_n, list_max_stake, list_exp_pools)
 
     args_list = []
     for i, config in enumerate(configurations):
-        n, max_stake, a0 = config
+        n, max_stake, exp_pools = config
         args['n'] = n
         args['max_stake'] = max_stake
-        args['a0'] = a0
+        args['exp_pools'] = exp_pools
         args['config_id'] = f'config_{i+1}'
         args_list.append(args.copy())
     

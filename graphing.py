@@ -1,4 +1,3 @@
-import itertools
 import os
 import pandas as pd
 import numpy as np
@@ -22,40 +21,65 @@ class Graphing:
 
         for config_id, data in self.data.items():
             rows.append([
-                data['n'], data['max_stake'], data['a0'], 
+                data['n'], data['max_stake'], data['exp_pools'], 
                 data['results']['avg_total_pools'], data['results']['avg_init_pools'],
                 data['results']['avg_opt_ub']
             ])
-        df = pd.DataFrame(rows, columns=['n', 'max_stake', 'a0', 'avg_total_pools', 'avg_init_pools', 'avg_opt_ub'])
+        df = pd.DataFrame(rows, columns=['n', 'max_stake', 'exp_pools', 'avg_total_pools', 'avg_init_pools', 'avg_opt_ub'])
         self.data = df
     
     def generate_heatmaps(self):
         """For each entry in the list of DataFrames, it calculates the ratio of the total pools to the initial pools
         and the total pools to the optimal upper bound. Then it creates a heatmap for each of these ratios.
         """
-        df = self.data[['n', 'max_stake', 'avg_total_pools', 'avg_init_pools', 'avg_opt_ub']]
-        df['total_vs_init_pools'] = df['avg_total_pools'] / df['avg_init_pools']
-        df['total_vs_opt_pools'] = df['avg_total_pools'] / df['avg_opt_ub']
+        dfs, names = self.create_pair_dfs()
 
-        heatmap_opt = df.pivot(columns='n', index='max_stake', values='total_vs_opt_pools')
-        heatmap_init = df.pivot(columns='n', index='max_stake', values='total_vs_init_pools')
+        heatmaps_init = []
+        heatmaps_opt = []
+
+        for i in range(len(dfs)):
+            params = list(set(dfs[i].columns)-set(self.metrics))
+            dfs[i]['total_vs_init_pools'] = dfs[i]['avg_total_pools'] / dfs[i]['avg_init_pools']
+            dfs[i]['total_vs_opt_pools'] = dfs[i]['avg_total_pools'] / dfs[i]['avg_opt_ub']
+
+            heatmaps_opt.append(dfs[i].pivot(columns=params[0], index=params[1], values='total_vs_opt_pools'))
+            heatmaps_init.append(dfs[i].pivot(columns=params[0], index=params[1], values='total_vs_init_pools'))
         
-        return heatmap_opt, heatmap_init
+        return heatmaps_opt, heatmaps_init, names
+    
+    def create_pair_dfs(self):
+        params = ['n', 'max_stake', 'exp_pools']
+        col_names = set(self.data.columns)
+
+        dfs = []
+        names = []
+
+        for param in params:
+            curr_cols = list(col_names - set([param]))
+
+            gb = self.data.groupby(param)
+            dfs += [v[curr_cols] for k, v in gb]
+            curr_keys = [k for k, v in gb]
+            names += [f'{param}={k}' for k in curr_keys]
+        
+        return dfs, names
+
     
     def store_heatmaps(self, path):
         """Store the heatmaps in the specified path
         """
-        heatmap_opt, heatmap_init = self.generate_heatmaps()
+        heatmaps_opt, heatmaps_init, names = self.generate_heatmaps()
 
         if not os.path.exists(path):
             os.makedirs(path)
 
-        plt.title(f'Total Pools vs Optimal Upper Bound')
-        sns.heatmap(heatmap_opt, annot=True, vmin=0, vmax=1)
-        plt.savefig(f'{path}/n_max_stake_opt.png')
-        plt.close()
+        for i in range(len(names)):
+            plt.title(f'Total Pools vs Optimal Upper Bound ({names[i]})')
+            sns.heatmap(heatmaps_opt[i], annot=True, vmin=0, vmax=1)
+            plt.savefig(f'{path}/{names[i]}_opt.png')
+            plt.close()
 
-        plt.title(f'Total Pools vs Initial Pools')
-        sns.heatmap(heatmap_init, annot=True, vmin=0, vmax=1)
-        plt.savefig(f'{path}/n_max_stake_init.png')
-        plt.close()
+            plt.title(f'Total Pools vs Initial Pools ({names[i]})')
+            sns.heatmap(heatmaps_init[i], annot=True, vmin=0, vmax=1)
+            plt.savefig(f'{path}/{names[i]}_init.png')
+            plt.close()

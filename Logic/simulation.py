@@ -15,7 +15,7 @@ class Simulation:
         self.a0 = args.get('a0', None)
         self.stake_distr = args.get('stake_distr').lower()
         self.config_id = args.get('config_id')
-        self.exp_pools = 5 if self.n < 100 else (7.5 if self.n < 250 else 10)
+        self.exp_pools = args.get('exp_pools')
 
         extra_args = []
         func = args.get('func')
@@ -78,6 +78,7 @@ class Simulation:
         }
 
         self.data['results'] = res
+        self.data['agents'] = [agent.to_dict() for agent in self.agents]
 
         return self.data
 
@@ -100,14 +101,14 @@ class Simulation:
             np.random.seed(self.seed)
 
         if self.stake_distr == 'uniform':
-            h0 = (1+self.max_stake) * self.exp_pools / 2
+            h0 = (1+self.max_stake) * self.n / (2*self.exp_pools)
             stakes = np.random.uniform(1, self.max_stake, self.n)
         elif self.stake_distr == 'pareto':
-            h0 = self.a0 / (self.a0 - 1) * self.exp_pools
+            h0 = (self.a0 * self.n) / ((self.a0 - 1) * self.exp_pools)
             stakes = np.random.pareto(np.random.pareto(self.a0, self.n))
             stakes[np.where(stakes > self.max_stake)[0]] = self.max_stake
         elif self.stake_distr == 'whale':
-            h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.exp_pools
+            h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.n / self.exp_pools
             stakes = np.random.choice(
                 [1, self.max_stake],
                 p=[1-self.whale_prob, self.whale_prob],

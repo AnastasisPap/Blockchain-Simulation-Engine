@@ -24,6 +24,10 @@ def main():
     with open(results_file, 'w') as f:
         json.dump(processed_data, f)
     
+    data_file = f'./results/{args.get("execution_id")}/data.json'
+    with open(data_file, 'w') as f:
+        json.dump(data, f)
+    
 
 if __name__ == '__main__':
     main()
