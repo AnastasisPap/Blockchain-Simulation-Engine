@@ -34,6 +34,12 @@ To avoid possible errors, you can use the config.json file from this repo and ch
 - **execution_id (str)**: the name for this execution. This will be used as the file name for the output.
 - **iterations (int)**: number of iterations to perform for each configuration. The average of all iterations is taken.
 
+### Calculation of the threshold value h
+```math
+\frac{\sum^n\mathbb{E}[s_i]}{h}=\frac{n}{k}
+```
+Where $s_i$=stake of agent $i$ and $\frac{n}{k}$ is the number of expected pools.
+
 ### Running the simulation
 1. From the CLI, set the arguments and run main.py, for example:
 ```
