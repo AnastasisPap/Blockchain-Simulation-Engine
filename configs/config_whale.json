@@ -1,13 +1,13 @@
 {
-    "n": [50,100,150,200,250,300,500],
-    "max_stake": [10,20,30,40,50,100,200],
-    "exp_pools": [5,10,20,50],
+    "n": [50,100,150],
+    "max_stake": [10,20,30,40,50],
+    "exp_pools": [20],
     "stake_distr": "whale",
     "func": 1,
     "epochs": 1000,
     "seed": 0,
     "a0": 1.2,
     "max_workers": 6,
-    "execution_id": "ExecutionId{n:[50,100,150,200,250,300,500],max_stake:[10,20,30,40,50,100,200],exp_pools:[5,10,20,50],whale}",
+    "execution_id": "ExecutionId{n:[50,100,150],max_stake:[10,20,30,40,50],exp_pools:[2,3,5,10,20],whale}",
     "iterations": 5
 }
