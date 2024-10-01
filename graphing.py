@@ -21,11 +21,11 @@ class Graphing:
 
         for config_id, data in self.data.items():
             rows.append([
-                data['n'], data['max_stake'], data['exp_pools'], 
+                data['n'], data['max_stake'], data['k'], 
                 data['results']['avg_total_pools'], data['results']['avg_init_pools'],
                 data['results']['avg_opt_ub']
             ])
-        df = pd.DataFrame(rows, columns=['n', 'max_stake', 'exp_pools', 'avg_total_pools', 'avg_init_pools', 'avg_opt_ub'])
+        df = pd.DataFrame(rows, columns=['n', 'max_stake', 'k', 'avg_total_pools', 'avg_init_pools', 'avg_opt_ub'])
         self.data = df
     
     def generate_heatmaps(self):
@@ -48,7 +48,7 @@ class Graphing:
         return heatmaps_opt, heatmaps_init, names
     
     def create_pair_dfs(self):
-        params = ['n', 'max_stake', 'exp_pools']
+        params = ['n', 'max_stake', 'k']
         col_names = set(self.data.columns)
 
         dfs = []

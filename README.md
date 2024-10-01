@@ -26,7 +26,7 @@ To avoid possible errors, you can use the config.json file from this repo and ch
 - **max_stake (list[int])**: the max stake any agent can have. A whale will have stake equal to this.
 - **stake_distr ("uniform" | "whale" | "pareto")**: the distribution from which agent stakes will be sampled from. Current options are the uniform, whale, and pareto distributions.
 - **func (0 | 1)**: the reward function that will be used. Current options include the exact Shapley (0) and from [^2] the Weighted Voting Game Approximation (1).
-- **exp_pools (list[int])**: the number of expected pools.
+- **k (list[int])**: n/k is the number of expected pools.
 - **epochs (int)**: max number of iterations.
 - **seed (int)**: the random seed for numpy.
 - **a0 (float)**: the shape of the pareto distribution.

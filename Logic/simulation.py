@@ -15,7 +15,7 @@ class Simulation:
         self.a0 = args.get('a0', None)
         self.stake_distr = args.get('stake_distr').lower()
         self.config_id = args.get('config_id')
-        self.exp_pools = args.get('exp_pools')
+        self.k = args.get('k')
 
         extra_args = []
         func = args.get('func')
@@ -103,16 +103,16 @@ class Simulation:
         if self.stake_distr == 'uniform':
             #Normal exp pools: h0 = (1+self.max_stake) * self.n / (2*self.exp_pools)
             #n/k:
-            h0 = (1+self.max_stake) * self.exp_pools / 2
+            h0 = (1+self.max_stake) * self.k / 2
             stakes = np.random.uniform(1, self.max_stake, self.n)
         elif self.stake_distr == 'pareto':
             #h0 = (self.a0 * self.n) / ((self.a0 - 1) * self.exp_pools)
-            h0 = (self.a0 * self.exp_pools) / (self.a0 - 1)
+            h0 = (self.a0 * self.k) / (self.a0 - 1)
             stakes = np.random.pareto(np.random.pareto(self.a0, self.n))
             stakes[np.where(stakes > self.max_stake)[0]] = self.max_stake
         elif self.stake_distr == 'whale':
             #h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.n / self.exp_pools
-            h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.exp_pools
+            h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.k
             stakes = np.random.choice(
                 [1, self.max_stake],
                 p=[1-self.whale_prob, self.whale_prob],
@@ -122,7 +122,7 @@ class Simulation:
         
         if np.sum(stakes) < h0:
             raise ValueError(f'Sum of stakes is less than h0. Please adjust the parameters. Batch Parameters used:\n\
-                             n: {self.n}, max_stake: {self.max_stake}, exp_pools: {self.exp_pools}')
+                             n: {self.n}, max_stake: {self.max_stake}, k: {self.k}')
         for i in range(self.n):
             self.agents.append(Agent(i, stakes[i], self.h0, self.reward_function))
         
