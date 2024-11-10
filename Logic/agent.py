@@ -1,6 +1,4 @@
 import numpy as np
-from scipy.stats import norm
-from Logic.game import Game
 
 class Agent:
     def __init__(self, id, stake, threshold_value, reward_function):

@@ -1,3 +1,4 @@
+import json
 import itertools
 
 def generate_configs(args):
@@ -58,3 +59,19 @@ def handle_outputs(outputs):
         }
     
     return processed_out
+
+def get_proportion_of_max_stake(results_path):
+    with open(results_path, 'r') as f:
+        data = json.load(f)
+
+    proportions = {}
+    for config_id, results in data.items():
+        total_stake = 0
+
+        for agent in results['agents']:
+            total_stake += agent['stake']
+        
+        prop = total_stake / results['h0']
+        proportions[config_id] = prop
+
+    return proportions

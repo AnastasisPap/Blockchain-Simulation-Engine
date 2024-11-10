@@ -75,6 +75,7 @@ class Simulation:
             'total_pools': total_pools,
             'opt_ub': opt_ub,
             'config_id': self.config_id,
+            'h0': self.h0
         }
 
         self.data['results'] = res

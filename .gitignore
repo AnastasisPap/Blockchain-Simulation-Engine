@@ -163,3 +163,4 @@ cython_debug/
 .vscode/
 results/*
 config_testing.json
+test.py
