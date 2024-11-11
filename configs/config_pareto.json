@@ -1,0 +1,14 @@
+{
+    "n": [100,150,200,250,300,500],
+    "max_stake": [10,30,40,50,100,200],
+    "exp_pools": [5, 10, 20, 50],
+    "stake_distr": "pareto",
+    "func": 1,
+    "epochs": 1000,
+    "seed": 0,
+    "p": 0.05,
+    "mode": 1,
+    "max_workers": 6,
+    "execution_id": "ExecutionId{n:[100,150,200,250,300,500],max_stake:[10,20,30,40,50,100,200],exp_pools:[5,10,20,50],pareto}",
+    "iterations": 5
+}

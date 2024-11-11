@@ -16,6 +16,8 @@ class Simulation:
         self.stake_distr = args.get('stake_distr').lower()
         self.config_id = args.get('config_id')
         self.k = args.get('k')
+        self.p = args.get('p', None)
+        self.mode = args.get('mode', None)
 
         extra_args = []
         func = args.get('func')
@@ -102,23 +104,22 @@ class Simulation:
             np.random.seed(self.seed)
 
         if self.stake_distr == 'uniform':
-            #Normal exp pools: h0 = (1+self.max_stake) * self.n / (2*self.exp_pools)
-            #n/k:
-            h0 = (1+self.max_stake) * self.k / 2
             stakes = np.random.uniform(1, self.max_stake, self.n)
         elif self.stake_distr == 'pareto':
-            #h0 = (self.a0 * self.n) / ((self.a0 - 1) * self.exp_pools)
-            h0 = (self.a0 * self.k) / (self.a0 - 1)
-            stakes = np.random.pareto(np.random.pareto(self.a0, self.n))
+            assert self.p is not None and self.mode is not None, 'Pareto distribution requires p and mode parameters.'
+
+            a = np.log(self.p) / np.log(self.mode/self.max_stake)
+
+            stakes = (np.random.pareto(a, self.n) + 1) * self.mode
             stakes[np.where(stakes > self.max_stake)[0]] = self.max_stake
+
         elif self.stake_distr == 'whale':
-            #h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.n / self.exp_pools
-            h0 = (1-self.whale_prob + self.whale_prob * self.max_stake) * self.k
             stakes = np.random.choice(
                 [1, self.max_stake],
                 p=[1-self.whale_prob, self.whale_prob],
                 size=self.n)
             
+        h0 = (np.sum(stakes) / self.n) * self.k
         self.h0 = h0
         
         if np.sum(stakes) < h0:
