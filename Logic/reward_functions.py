@@ -28,8 +28,22 @@ class RewardFunctions:
             return self.exact_shap(agent, W)
         elif self.selection == 1:
             return self.wvg_shap(agent, W)
+        elif self.selection == 2:
+            return self.proportional(agent, W)
         else:
             raise Exception("Incorrect option for Reward Function.")
+    
+    def proportional(self, curr_agent, W):
+        res = np.zeros(W.shape[0])
+
+        for pool in range(W.shape[0]):
+            curr_total_stake = np.sum(W[pool, :])
+
+            if pool != curr_agent.id: curr_total_stake += curr_agent.stake
+            res[pool] = (curr_agent.stake / curr_total_stake) * (curr_agent.stake >= curr_agent.threshold_value)
+
+        return res
+
 
     def get_utility(self, stake, coalition_stake, threshold):
         return int(coalition_stake + stake >= threshold) - int(coalition_stake >= threshold)
